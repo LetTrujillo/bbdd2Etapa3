@@ -12,7 +12,7 @@
 
         <discriminator column="tipo_usuario" not-null="false" type="string" length="10" force="true"/>
         
-        <property name="nombreUsuario" column="nombre_usuario"  type="string" /> <!-- unique="true" --> 
+        <property name="nombreUsuario" column="nombre_usuario"  type="string" /> 
         <property name="password" column="password" type="string" />
         <property name="fechaIngresoMuber" column="fecha_ingreso_muber" type="timestamp"/> 
         

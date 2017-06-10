@@ -45,7 +45,7 @@ public class Conductor extends Usuario implements Serializable{
 	public void setCalificacionesConductor(List<Calificacion> calificacionesConductor) {
 		this.calificacionesConductor = calificacionesConductor;
 	}
-//	
+
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();				

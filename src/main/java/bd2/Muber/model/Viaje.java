@@ -28,9 +28,9 @@ public class Viaje implements Serializable{
 	private Date fechaViaje;
 	@Expose
 	private int cantidadMaximaPasajeros;
-//	@Expose
+
 	private Conductor conductorViaje;
-//	@Expose
+
 	private List<Pasajero> pasajerosViaje;
 	@Expose
 	private String estado;

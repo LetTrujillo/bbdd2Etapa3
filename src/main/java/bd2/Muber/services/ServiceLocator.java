@@ -1,7 +1,5 @@
 package bd2.Muber.services;
 
-import bd2.Muber.model.Calificacion;
-
 public class ServiceLocator {
 	
 	private static final ServiceLocator INSTANCE = new ServiceLocator();

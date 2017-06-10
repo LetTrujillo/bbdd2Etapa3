@@ -1,6 +1,5 @@
 package bd2.Muber.repositories.impl;
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.hibernate.Query;
