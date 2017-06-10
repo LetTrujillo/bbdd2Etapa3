@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.*;
 
 import bd2.Muber.model.Calificacion;
 import bd2.Muber.model.Conductor;
@@ -107,7 +108,7 @@ public class MuberRestController {
 	 * @return Json
 	 */
 	@RequestMapping(value = "/conductores/detalle", method = RequestMethod.GET, produces = "application/json", headers = "Accept=application/json")
-	public String informacionConductor(@PathParam(value = "id") Long id) {
+	public String informacionConductor(@PathParam(value = "id")Long id) {
 		
 		Conductor conductor = this.getConductoresService().getconductorById(id);
 		if(conductor == null || "".equals(conductor))			
@@ -233,10 +234,12 @@ public class MuberRestController {
 		if(viaje == null || "".equals(viaje))			
 				return JsonUtil.generateJson("OK", "No se encontró el viaje");
 		else{
-			viaje.finalizarViaje();
-			this.getViajesService().update(viaje);
-			return JsonUtil.generateJson("OK", "El viaje fue finalizado con éxito");
-			}
+			if(viaje.finalizarViaje()){
+				this.getViajesService().update(viaje);
+				return JsonUtil.generateJson("OK", "El viaje fue finalizado con éxito");
+			}	
+			else return JsonUtil.generateJson("OK", "Verifique que el viaje no haya sido finalizado.");
+		}
 			
 		}
 	
@@ -303,7 +306,6 @@ public class MuberRestController {
 		Pasajero pasajero = new Pasajero();
 		pasajero.setNombreUsuario(nombre);
 		pasajero.setCreditoDisponible(credito);;
-		Pasajero nuevoPasajero = null;
 		this.getPasajerosService().save(pasajero);
 		return JsonUtil.generateJson("OK", "Se creo el pasajero con éxito número: " + pasajero.getIdUsuario());
 	}

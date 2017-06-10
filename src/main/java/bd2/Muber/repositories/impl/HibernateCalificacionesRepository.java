@@ -19,5 +19,9 @@ public class HibernateCalificacionesRepository implements CalificacionesReposito
 	public void save(Calificacion calificacion) {
 		sessionFactory.getCurrentSession().save(calificacion);
 	}
+	@Override
+	public void update(Calificacion calificacion) {
+		sessionFactory.getCurrentSession().update(calificacion);
+	}
 
 }

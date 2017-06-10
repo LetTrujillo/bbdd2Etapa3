@@ -10,5 +10,9 @@ public class CalificacionesServiceImpl extends BaseServiceImpl implements Califi
 		this.getCalificacionesRepository().save(calificacion);
 	}
 
+	@Override
+	public void update(Calificacion calificacion) {
+		this.getCalificacionesRepository().update(calificacion);
+	}
 	
 }
