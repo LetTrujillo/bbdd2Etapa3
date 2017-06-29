@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
-
 public class Muber implements Serializable{
 
 	/**
@@ -13,13 +11,9 @@ public class Muber implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Expose
 	private Long idMuber;
-	@Expose
 	private List<Conductor> conductores;
-	@Expose
 	private List<Pasajero> pasajeros;
-	@Expose
 	private List<Viaje> viajes;
 	
 	public Muber(){

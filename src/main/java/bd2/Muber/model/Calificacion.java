@@ -2,8 +2,6 @@ package bd2.Muber.model;
 
 import java.io.Serializable;
 
-import com.google.gson.annotations.Expose;
-
 public class Calificacion implements Serializable{
 
 	/**
@@ -11,15 +9,10 @@ public class Calificacion implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Expose
 	private Long idCalificacion;
-	@Expose
 	private String comentario;
-	@Expose
 	private int puntaje;
-	@Expose
 	private Pasajero pasajero;
-	@Expose
 	private Viaje viaje;
 	
 	public Calificacion(){

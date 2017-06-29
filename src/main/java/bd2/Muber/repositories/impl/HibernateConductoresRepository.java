@@ -1,5 +1,6 @@
 package bd2.Muber.repositories.impl;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -36,6 +37,14 @@ public class HibernateConductoresRepository implements ConductoresRepositoryBI {
 	public List<Conductor> getConductoresByViajesAbiertos() {
 		Query query = sessionFactory.getCurrentSession().createQuery("select conductorViaje from Viaje where estado = 'Abierto'");
 		return query.list();
+	}
+	@Override
+	public void save(Conductor conductor) {
+		sessionFactory.getCurrentSession().save(conductor);
+	}
+	@Override
+	public void update(Conductor conductor) {
+		sessionFactory.getCurrentSession().update(conductor);
 	}
 
 	

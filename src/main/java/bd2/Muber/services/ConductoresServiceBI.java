@@ -9,4 +9,6 @@ public interface ConductoresServiceBI {
 	public List<Conductor> getConductores();
 	public Conductor getconductorById(Long id);
 	public List<Conductor> getConductoresByViajesAbiertos();
+	public void save(Conductor conductor);
+	public void update(Conductor conductor);
 }

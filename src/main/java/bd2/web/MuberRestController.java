@@ -2,10 +2,8 @@ package bd2.web;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.Date;
 import java.util.List;
-
-import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import bd2.Muber.dto.CalificacionDTO;
+import bd2.Muber.dto.ConductorDTO;
+import bd2.Muber.dto.PasajeroDTO;
+import bd2.Muber.dto.ViajeDTO;
 import bd2.Muber.model.Calificacion;
 import bd2.Muber.model.Conductor;
 import bd2.Muber.model.Pasajero;
@@ -48,6 +50,110 @@ public class MuberRestController {
 	
 	@Autowired
 	private CalificacionesServiceBI calificacionesService;
+	
+	
+	/**
+	 * Crea objetos del escenario de la Etapa1
+	 * curl http://localhost:8080/MuberRESTful/rest/services/iniciar
+	 */
+	@RequestMapping(value = "/iniciar", method = RequestMethod.GET, produces = "application/json", headers = "Accept=application/json")
+    public String instanciarEscenario(){
+		/*
+		 * Crear conductor
+		 */
+		Conductor conductor = new Conductor();
+		conductor.setNombreUsuario("Roberto");
+		conductor.setPassword("RobertoConductor");
+		conductor.setFechaVencimientoLicencia(new Date());
+		conductor.setFechaIngresoMuber(new Date());
+		conductoresService.save(conductor);
+		
+		/*
+		 * Crear viaje
+		 */
+		Viaje viaje = new Viaje();
+		viaje.setOrigen("La Plata");
+		viaje.setDestino("Tres Arroyos");
+		viaje.setFechaViaje(new Date());
+		viaje.setCantidadMaximaPasajeros(4);
+		viaje.setCostoTotal(900);
+		viaje.setEstado(EstadoEnum.ABIERTO.toString());
+		viajesService.save(viaje);
+		
+		/*
+		 * Crear Pasajeros
+		 */
+		Pasajero pasajeroGerman = new Pasajero();
+		pasajeroGerman.setNombreUsuario("Germán");
+		pasajeroGerman.setPassword("PasajeroGerman");
+		pasajeroGerman.setCreditoDisponible(1500d);
+		pasajeroGerman.setFechaIngresoMuber(new Date());
+		pasajerosService.save(pasajeroGerman);
+		
+		Pasajero pasajeroAlicia = new Pasajero();
+		pasajeroAlicia.setNombreUsuario("Alicia");
+		pasajeroAlicia.setPassword("PasajeroAlicia");
+		pasajeroAlicia.setCreditoDisponible(1500d);
+		pasajeroAlicia.setFechaIngresoMuber(new Date());
+		pasajerosService.save(pasajeroAlicia);
+		
+		Pasajero pasajeroMargarita = new Pasajero();
+		pasajeroMargarita.setNombreUsuario("Margarita");
+		pasajeroMargarita.setPassword("PasajeroMargarita");
+		pasajeroMargarita.setCreditoDisponible(1500d);
+		pasajeroMargarita.setFechaIngresoMuber(new Date());
+		pasajerosService.save(pasajeroMargarita);
+		
+		/*
+		 * Agregar pasajeros y conductor al viaje
+		 */
+		viaje.agregarPasajero(pasajeroGerman);
+		viaje.agregarPasajero(pasajeroAlicia);
+		viaje.agregarPasajero(pasajeroMargarita);
+		viaje.setConductorViaje(conductor);
+		viajesService.update(viaje);
+		/*
+		 * Crear calificaciones
+		 */
+		Calificacion calificacionGerman = new Calificacion();
+		calificacionGerman.setPasajero(pasajeroGerman);
+		calificacionGerman.setPuntaje(5);
+		calificacionGerman.setComentario("Muy bueno el viaje");
+		calificacionGerman.setViaje(viaje);
+		calificacionesService.save(calificacionGerman);
+		
+		Calificacion calificacionAlicia = new Calificacion();
+		calificacionAlicia.setPasajero(pasajeroAlicia);
+		calificacionAlicia.setPuntaje(3);
+		calificacionAlicia.setComentario("Viaje regular");
+		calificacionAlicia.setViaje(viaje);
+		calificacionesService.save(calificacionAlicia);
+		
+		Calificacion calificacionMargarita = new Calificacion();
+		calificacionMargarita.setPasajero(pasajeroMargarita);
+		calificacionMargarita.setPuntaje(4);
+		calificacionMargarita.setComentario("Viaje bueno");
+		calificacionMargarita.setViaje(viaje);
+		calificacionesService.save(calificacionMargarita);
+		
+		conductor.agregarCalificacion(calificacionGerman);
+		conductor.agregarCalificacion(calificacionAlicia);
+		conductor.getCalificacionesConductor().add(calificacionMargarita);
+		
+		/*
+		 * Registrar viaje del conductor
+		 */
+		conductor.registrarViajeRealizado(viaje);
+		conductoresService.update(conductor);
+		/*
+		 * Finalizar el viaje
+		 */
+		viaje.finalizarViaje();
+		viajesService.update(viaje);
+		
+		return JsonUtil.generateJson("OK", "Escenario creado"); 
+		
+	}
 
 	/**
 	 * Lista todos los pasajeros registrados en Muber
@@ -59,10 +165,15 @@ public class MuberRestController {
 	public String pasajeros() {
 		
 		List<Pasajero> pasajeros = this.getPasajerosService().getPasajeros();
-		if(pasajeros == null || pasajeros.isEmpty())
+		List<PasajeroDTO> pasajerosDTO = new ArrayList<PasajeroDTO>();
+		if(pasajeros == null || pasajeros.isEmpty()){
+	
 			return JsonUtil.generateJson("OK", "No hay pasajeros registrados");		
-		else
-			return JsonUtil.generateJson("OK", pasajeros);
+		}else
+			for(Pasajero pasajero : pasajeros){
+				pasajerosDTO.add(new PasajeroDTO(pasajero));
+			}
+			return JsonUtil.generateJson("OK", pasajerosDTO);
 
 	}
 	
@@ -75,8 +186,12 @@ public class MuberRestController {
 	public String conductores() {
 
 		List<Conductor> conductores = this.getConductoresService().getConductores();
+		List<ConductorDTO> conductoresDTO = new ArrayList<ConductorDTO>();
 		if(conductores != null && !conductores.isEmpty()){
-			return JsonUtil.generateJson("OK", conductores);
+			for(Conductor conductor : conductores){
+				conductoresDTO.add(new ConductorDTO(conductor));
+			}
+			return JsonUtil.generateJson("OK", conductoresDTO);
 		}
 		else
 			return JsonUtil.generateJson("OK", "No hay conductores registrados");
@@ -91,8 +206,12 @@ public class MuberRestController {
 	public String viajesAbiertos() {
 		
 		List<Viaje> viajes = this.getViajesService().getViajesAbiertos();
+		List<ViajeDTO> viajesDTO = new ArrayList<ViajeDTO>();
 		if(viajes != null && !viajes.isEmpty()){
-				return JsonUtil.generateJson("OK", viajes);
+			for(Viaje viaje : viajes){
+				viajesDTO.add(new ViajeDTO(viaje));
+			}
+			return JsonUtil.generateJson("OK", viajesDTO);
 		}	else
 				return JsonUtil.generateJson("OK", "No hay viajes abiertos");
 		
@@ -102,33 +221,22 @@ public class MuberRestController {
 	
 	/**
 	 * Obtener la información de un conductor (nombre de usuario, viajes realizados, puntaje promedio y fecha de licencia)
-	 *  curl http://localhost:8080/MuberRESTful/rest/services/conductores/detalle?id={id}
+	 *  curl http://localhost:8080/MuberRESTful/rest/services/conductores/detalle/{id}
 	 * @param id
 	 * @return Json
 	 */
-	@RequestMapping(value = "/conductores/detalle", method = RequestMethod.GET, produces = "application/json", headers = "Accept=application/json")
-	public String informacionConductor(@PathParam(value = "id")Long id) {
+	@RequestMapping(value = "/conductores/detalle/{id}", method = RequestMethod.GET, produces = "application/json", headers = "Accept=application/json")
+	public String informacionConductor(@PathVariable (value = "id") Long id) {
 		
 		Conductor conductor = this.getConductoresService().getconductorById(id);
 		if(conductor == null || "".equals(conductor))			
 			return JsonUtil.generateJson("OK", "No se encontró el conductor");
 		else{
-			List<Object> dataList = new LinkedList<>();
-			dataList.add(conductor);
-			if(!conductor.getViajesRealizadosConductor().isEmpty()){
-				for(Viaje viaje : conductor.getViajesRealizadosConductor()){
-					dataList.add(viaje);
-				}
-			}
-			else
-				dataList.add("El conductor no tiene viajes realizados");
-			
-			dataList.add("Puntaje Promedio: " + conductor.promedioCalificacion());
-			
-			return JsonUtil.generateJson("OK", dataList);
+			ConductorDTO conductorDTO = new ConductorDTO(conductor);
+			conductorDTO.setPuntajePromedio(conductor.promedioCalificacion());
+			return JsonUtil.generateJson("OK", conductorDTO);
 		}
-
-	}
+}
 	
 	/**
 	 * Crea un viaje
@@ -153,10 +261,12 @@ public class MuberRestController {
 			viaje.setOrigen(origen);
 			viaje.setDestino(destino);
 			viaje.setCostoTotal(costoTotal);
+			viaje.setFechaViaje(new Date());
 			viaje.setEstado(EstadoEnum.ABIERTO.toString());
 			viaje.setConductorViaje(conductor);
 			this.getViajesService().save(viaje);
-			return JsonUtil.generateJson("OK", "Se creo el viaje con éxito");
+			ViajeDTO viajeDTO = new ViajeDTO(viaje);
+			return JsonUtil.generateJson("OK",viajeDTO);
 
 		}
 
@@ -215,7 +325,8 @@ public class MuberRestController {
 				calificacion.setPuntaje(puntaje);
 				calificacion.setComentario(comentario);
 				this.getCalificacionesService().save(calificacion);
-				return JsonUtil.generateJson("OK", "Se creo la calificación con éxito");
+				CalificacionDTO calificacionDTO = new CalificacionDTO(calificacion);
+				return JsonUtil.generateJson("Calificación creada", calificacionDTO);
 			}
 		}
 	}
@@ -235,7 +346,8 @@ public class MuberRestController {
 		else{
 			if(viaje.finalizarViaje()){
 				this.getViajesService().update(viaje);
-				return JsonUtil.generateJson("OK", "El viaje fue finalizado con éxito");
+				ViajeDTO viajeDTO = new ViajeDTO(viaje);
+				return JsonUtil.generateJson("Viaje Finalizado", viajeDTO);
 			}	
 			else return JsonUtil.generateJson("OK", "Verifique que el viaje no haya sido finalizado.");
 		}
@@ -244,7 +356,7 @@ public class MuberRestController {
 	
 	/**
 	 * Cargar crédito a un pasajero
-	 * curl -X PUT http://localhost:8080/MuberRESTful/rest/services/pasajeros/cargarCredito/3/4000
+	 * curl -X PUT http://localhost:8080/MuberRESTful/rest/services/pasajeros/cargarCredito/{idPasajero}/{monto}
 	 * @param pasajeroId
 	 * @param monto
 	 * @return Json
@@ -260,7 +372,8 @@ public class MuberRestController {
 			double credito = Double.valueOf(monto);
 			pasajero.agregarCredito(credito);
 			this.getPasajerosService().update(pasajero);
-			return JsonUtil.generateJson("OK", "Se agregó crédito al pasajero");
+			PasajeroDTO pasajeroDTO = new PasajeroDTO(pasajero);
+			return JsonUtil.generateJson("Crédito cargado", pasajeroDTO);
 			
 		}
 	}
@@ -275,21 +388,21 @@ public class MuberRestController {
 	public String conductoresTop10() {
 		
 		List<Conductor> conductores = this.getConductoresService().getConductoresByViajesAbiertos();
+		List<ConductorDTO> conductoresDTO = new ArrayList<ConductorDTO>();
 		if(conductores != null && !conductores.isEmpty()){
 			Collections.sort(conductores, Conductor.COMPARADO_POR_PROMEDIO);
 			
-			ArrayList<String> datosConductores = new ArrayList<String>();
 			if(conductores.size() > 10)
 				conductores = conductores.subList(conductores.size() - 10, conductores.size());
 			
 			for(Conductor conductor : conductores){
-				datosConductores.add(conductor.toString());
+				conductoresDTO.add(new ConductorDTO(conductor));
 			}
-			
-			return JsonUtil.generateJson("OK", datosConductores);
+		
+			return JsonUtil.generateJson("OK", conductoresDTO);
 
 		}
-		return JsonUtil.generateJson("OK", "No hay conductores registrados");
+		return JsonUtil.generateJson("OK", "No hay conductores con viajes abierto");
 	}
 	
 	/**
@@ -304,9 +417,10 @@ public class MuberRestController {
 			
 		Pasajero pasajero = new Pasajero();
 		pasajero.setNombreUsuario(nombre);
-		pasajero.setCreditoDisponible(credito);;
+		pasajero.setCreditoDisponible(credito);
 		this.getPasajerosService().save(pasajero);
-		return JsonUtil.generateJson("OK", "Se creo el pasajero con éxito número: " + pasajero.getIdUsuario());
+		PasajeroDTO pasajeroDTO = new PasajeroDTO(pasajero);
+		return JsonUtil.generateJson("Pasajero Creado", pasajeroDTO);
 	}
 	
 	public PasajerosServiceBI getPasajerosService() {

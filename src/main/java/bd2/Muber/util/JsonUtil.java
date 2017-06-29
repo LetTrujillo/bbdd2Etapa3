@@ -12,9 +12,8 @@ public class JsonUtil<T> {
 		aMap.put("result", result);
 		aMap.put("resultingObjects", aSerializableObject);
 
-		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-		return	gson.toJson(aMap);
-		
+		return new Gson().toJson(aMap);
+
 	}
 	
 

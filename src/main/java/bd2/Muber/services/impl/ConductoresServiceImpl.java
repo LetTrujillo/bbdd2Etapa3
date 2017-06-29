@@ -22,4 +22,14 @@ public class ConductoresServiceImpl extends BaseServiceImpl implements Conductor
 		return this.getConductoresRepository().getConductoresByViajesAbiertos();
 	}
 
+	@Override
+	public void save(Conductor conductor) {
+		this.getConductoresRepository().save(conductor);
+	}
+
+	@Override
+	public void update(Conductor conductor) {
+		this.getConductoresRepository().update(conductor);
+	}
+
 }

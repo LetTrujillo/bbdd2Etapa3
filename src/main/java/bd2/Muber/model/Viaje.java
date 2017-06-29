@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
-
 import bd2.Muber.util.EstadoEnum;
 
 public class Viaje implements Serializable{
@@ -16,23 +14,16 @@ public class Viaje implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Expose
 	private Long idViaje;
-	@Expose
 	private String destino;
-	@Expose
 	private String origen;
-	@Expose
 	private double costoTotal;
-	@Expose
 	private Date fechaViaje;
-	@Expose
 	private int cantidadMaximaPasajeros;
 
 	private Conductor conductorViaje;
 
 	private List<Pasajero> pasajerosViaje;
-	@Expose
 	private String estado;
 	
 	public Viaje(){

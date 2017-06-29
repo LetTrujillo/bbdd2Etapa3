@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
-
 public class Conductor extends Usuario implements Serializable{
 
 	/**
@@ -15,7 +13,6 @@ public class Conductor extends Usuario implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Expose
 	private Date fechaVencimientoLicencia;
 	private List<Viaje> viajesRealizadosConductor;
 	
